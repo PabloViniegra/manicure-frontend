@@ -21,8 +21,11 @@
     "@tanstack/vue-query": "^5.79.0",
     "axios": "^1.9.0",
     "pinia": "^3.0.1",
+    "vee-validate": "^4.15.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-hooks-form": "^0.3.1",
+    "vue-router": "^4.5.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.1",

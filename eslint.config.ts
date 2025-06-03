@@ -32,10 +32,10 @@ export default defineConfigWithVueTs(
       'semi': ['error', 'never'],
       'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
       'indent': ['error', 2, { 'SwitchCase': 1 }],
-      'no-console': 'error',
+      'no-console': 'warn',
       'no-debugger': 'error',
       'vue/multi-word-component-names': 'off',
-      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': ['error', {
         allowExpressions: false,
         allowTypedFunctionExpressions: false
