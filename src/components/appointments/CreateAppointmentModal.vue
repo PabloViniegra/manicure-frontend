@@ -33,7 +33,7 @@ async function onSubmit(values: any): Promise<void> {
     client_id: me.value.client_id,
     date: editedDate.value,
     notes: values.notes,
-    service_ids: values.service_ids.map((id: string): number => Number(id)),
+    service_ids: (values.service_ids ?? []).map((id: string): number => Number(id)),
   }
   await createAppointment(appointment)
   emit('close')
