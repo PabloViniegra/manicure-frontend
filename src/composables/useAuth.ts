@@ -1,14 +1,15 @@
-import { register, login } from '@/services/auth'
-import { ref, type Ref } from 'vue'
-import { useMutation, QueryClient } from '@tanstack/vue-query'
+import { register, login, getMe } from '@/services/auth'
+import { ref, watch, type Ref } from 'vue'
+import { useMutation, QueryClient, useQuery } from '@tanstack/vue-query'
 import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
-import type { UserRegister, UserRegisterResponse, UserLogin, Token } from '@/types/types'
+import type { UserRegister, UserRegisterResponse, UserLogin, Token, User } from '@/types/types'
 import { useRouter } from 'vue-router'
 
 export const useAuth = (): {
   user: typeof user
   username: typeof username
+  me: Ref<User | undefined>
   isAuthenticated: boolean
   login: (userIn: UserLogin) => Promise<Token>
   isLoging: Ref<boolean>
@@ -46,6 +47,27 @@ export const useAuth = (): {
     },
   })
 
+  const meQuery = useQuery({
+    queryKey: ['user'],
+    queryFn: getMe,
+  })
+
+  watch(
+    meQuery.data,
+    (data): void => {
+      if (data) {
+        authStore.setUser({ id: data.id, name: data.full_name, email: data.email })
+      }
+    },
+    { immediate: true },
+  )
+
+  watch(meQuery.error, (err): void => {
+    if (err instanceof Error) {
+      console.error('Error fetching user:', err.message)
+    }
+  })
+
   function logout(): void {
     authStore.clearAuth()
     queryClient.removeQueries({ queryKey: ['user'] })
@@ -54,6 +76,7 @@ export const useAuth = (): {
   return {
     user,
     username,
+    me: meQuery.data,
     isAuthenticated: authStore.isAuthenticated,
     login: loginMutation.mutateAsync,
     isLoging: loginMutation.isPending,
