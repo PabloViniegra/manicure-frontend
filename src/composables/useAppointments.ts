@@ -1,4 +1,4 @@
-import { useQuery, useMutation, QueryClient } from '@tanstack/vue-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { getMyAppointments, createAppointment } from '@/services/appointments'
 import { useAppointmentsStore } from '@/stores/appointments'
 import type { Appointment, AppointmentCreate, AppointmentResponse } from '@/types/types'
@@ -11,7 +11,7 @@ export function useAppointments(params?: { skip?: number; limit?: number; search
   createAppointment: (appointmentIn: AppointmentCreate) => Promise<Appointment>
   isCreating: Ref<boolean>
 } {
-  const queryClient = new QueryClient()
+  const queryClient = useQueryClient()
   const skip = params?.skip ?? 0
   const limit = params?.limit ?? 100
   const search = params?.search ?? null
