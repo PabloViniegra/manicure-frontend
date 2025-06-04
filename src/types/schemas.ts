@@ -29,3 +29,8 @@ export const loginSchema = yup.object({
   email: yup.string().email('Formato de email inválido').required('El email es obligatorio'),
   password: yup.string().required('La contraseña es obligatoria'),
 })
+
+export const appointmentCreateSchema = yup.object({
+  service_ids: yup.array().of(yup.number()).min(1, 'Selecciona al menos un servicio'),
+  notes: yup.string().optional(),
+})
