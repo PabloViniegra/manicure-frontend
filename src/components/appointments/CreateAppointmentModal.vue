@@ -4,6 +4,7 @@ import { appointmentCreateSchema } from '@/types/schemas'
 import { useServices } from '@/composables/useServices'
 import { useAppointments } from '@/composables/useAppointments'
 import { useAuth } from '@/composables/useAuth'
+import { ref, watch } from 'vue'
 import type { AppointmentCreate } from '@/types/types'
 
 const props = defineProps<{
@@ -17,11 +18,19 @@ const { services } = useServices()
 const { createAppointment, isCreating } = useAppointments()
 const { me } = useAuth()
 
+const editedDate = ref(props.date)
+watch(
+  () => props.date,
+  (val): void => {
+    editedDate.value = val
+  },
+)
+
 async function onSubmit(values: any): Promise<void> {
   if (!me.value) return
   const appointment: AppointmentCreate = {
     client_id: me.value.client_id,
-    date: props.date,
+    date: editedDate.value,
     notes: values.notes,
     service_ids: values.service_ids.map((id: string): number => Number(id)),
   }
@@ -37,12 +46,16 @@ async function onSubmit(values: any): Promise<void> {
         <Form :validation-schema="appointmentCreateSchema" @submit="onSubmit" class="space-y-4">
           <div>
             <label class="block text-gray-700 font-mont font-medium">Fecha</label>
-            <input
+            <Field
+              name="date"
+              as="input"
               type="text"
-              :value="date"
-              disabled
-              class="w-full rounded border px-3 py-2 mt-1 font-sans text-black bg-gray-100"
+              v-model="editedDate"
+              class="w-full rounded border px-3 py-2 mt-1 font-sans text-black bg-white"
+              :validateOnInput="true"
+              placeholder="YYYY-MM-DD HH:mm"
             />
+            <ErrorMessage name="date" class="text-danger text-xs mt-1" />
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Servicios</label>

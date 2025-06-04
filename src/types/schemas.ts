@@ -11,16 +11,19 @@ export const registerSchema = yup.object({
     .required('Contraseña obligatoria')
     .matches(
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/,
-      'Debe contener al menos una mayúscula, un número y un carácter especial'
+      'Debe contener al menos una mayúscula, un número y un carácter especial',
     ),
-  confirmPassword: yup.string()
+  confirmPassword: yup
+    .string()
     .oneOf([yup.ref('password')], 'Las contraseñas no coinciden')
     .required('Campo obligatorio'),
-  phone: yup.string()
+  phone: yup
+    .string()
     .matches(/^[6-9]\d{8}$/, 'Introduce un teléfono válido (ej: 600000000)')
     .required('Teléfono obligatorio'),
   address: yup.string().required('Dirección obligatoria'),
-  postalCode: yup.string()
+  postalCode: yup
+    .string()
     .matches(/^\d{5}$/, 'Debe ser un código postal válido (5 dígitos)')
     .required('Código postal obligatorio'),
 })
@@ -31,6 +34,10 @@ export const loginSchema = yup.object({
 })
 
 export const appointmentCreateSchema = yup.object({
+  date: yup
+    .string()
+    .matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/, 'Fecha inválida (YYYY-MM-DD HH:mm)')
+    .required('La fecha es obligatoria'),
   service_ids: yup.array().of(yup.number()).min(1, 'Selecciona al menos un servicio'),
   notes: yup.string().optional(),
 })
