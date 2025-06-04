@@ -1,0 +1,102 @@
+<template>
+  <div class="relative" ref="wrapper">
+    <div
+      class="w-full rounded border px-3 py-2 mt-1 font-sans text-black bg-white flex flex-wrap gap-1 cursor-pointer"
+      @click="toggle"
+    >
+      <template v-if="selectedOptions.length">
+        <span
+          v-for="opt in selectedOptions"
+          :key="opt.id"
+          class="bg-primary text-white text-xs rounded px-2 py-1"
+        >
+          {{ opt.name }}
+        </span>
+      </template>
+      <span v-else class="text-gray-400">{{ placeholder }}</span>
+    </div>
+    <transition name="fade">
+      <ul
+        v-if="open"
+        class="absolute z-10 w-full bg-white border rounded mt-1 max-h-60 overflow-auto shadow-lg"
+      >
+        <li
+          v-for="option in options"
+          :key="option.id"
+          class="px-3 py-2 hover:bg-primary-light flex items-center gap-2 cursor-pointer"
+        >
+          <input
+            type="checkbox"
+            class="accent-primary"
+            :value="option.id"
+            v-model="localValue"
+            @click.stop
+          />
+          <span>{{ option.name }}</span>
+        </li>
+      </ul>
+    </transition>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
+import type { ServiceSimple } from '@/types/types'
+
+interface Props {
+  modelValue: number[]
+  options: ServiceSimple[]
+  placeholder?: string
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<{ (e: 'update:modelValue', value: number[]): void }>()
+
+const open = ref(false)
+const localValue = ref<number[]>(props.modelValue ?? [])
+const wrapper = ref<HTMLElement | null>(null)
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    localValue.value = val ?? []
+  },
+)
+
+watch(localValue, (val) => {
+  emit('update:modelValue', val)
+})
+
+const selectedOptions = computed(() =>
+  props.options.filter((o) => localValue.value.includes(o.id)),
+)
+
+function toggle(): void {
+  open.value = !open.value
+}
+
+function onClickOutside(event: MouseEvent): void {
+  if (wrapper.value && !wrapper.value.contains(event.target as Node)) {
+    open.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', onClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClickOutside)
+})
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
