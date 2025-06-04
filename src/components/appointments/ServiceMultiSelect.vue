@@ -57,18 +57,18 @@ const localValue = ref<number[]>(props.modelValue ?? [])
 const wrapper = ref<HTMLElement | null>(null)
 
 watch(
-  () => props.modelValue,
-  (val) => {
+  (): number[] => props.modelValue,
+  (val): void => {
     localValue.value = val ?? []
   },
 )
 
-watch(localValue, (val) => {
+watch(localValue, (val): void => {
   emit('update:modelValue', val)
 })
 
-const selectedOptions = computed(() =>
-  props.options.filter((o) => localValue.value.includes(o.id)),
+const selectedOptions = computed((): ServiceSimple[] =>
+  props.options.filter((o): boolean => localValue.value.includes(o.id)),
 )
 
 function toggle(): void {
