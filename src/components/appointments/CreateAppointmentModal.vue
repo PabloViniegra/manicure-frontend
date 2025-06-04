@@ -20,7 +20,7 @@ const { me } = useAuth()
 
 const editedDate = ref(props.date)
 watch(
-  () => props.date,
+  (): string => props.date,
   (val): void => {
     editedDate.value = val
   },
