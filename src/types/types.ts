@@ -32,6 +32,14 @@ export interface UserLocalStorage {
   email: string
 }
 
+export interface User {
+  email: string
+  full_name: string
+  role: UserRole
+  id: number
+  client_id: number
+}
+
 export enum UserRole {
   ADMIN = 'admin',
   CLIENT = 'client',
@@ -85,6 +93,13 @@ export interface AppointmentResponse {
     total_pages: number
   }
   data: Appointment[]
+}
+
+export interface AppointmentCreate {
+  client_id: number
+  date: string
+  notes: string
+  service_ids: number[]
 }
 
 export type QalendarEvent = {
