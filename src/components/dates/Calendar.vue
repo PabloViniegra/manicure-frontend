@@ -7,10 +7,14 @@ import type { QalendarEvent } from '@/types/types'
 import { mapAppointmentsToEvents, mapBlockedSlotsToevents } from '@/utils/mappers'
 import { config } from '@/lib/qalendarConfig'
 import { useSlots } from '@/composables/useSlots'
+import { useModal } from '@/composables/useModal'
+import CreateAppointmentModal from '@/components/appointments/CreateAppointmentModal.vue'
 
 const { appointments, isLoading } = useAppointments()
 const { blockedSlots, isLoadingSlots } = useSlots()
 const events = ref<QalendarEvent[]>([])
+const { isOpen, open, close } = useModal()
+const selectedDate = ref('')
 
 watchEffect((): void => {
   const apptEvents = appointments.value ? mapAppointmentsToEvents(appointments.value) : []
@@ -25,11 +29,24 @@ watchEffect((): void => {
   events.value = [...apptEvents, ...filteredBlockedEvents]
   console.log('Events updated:', events.value)
 })
+
+function handleCellClick(event: any): void {
+  if (event && event.time && event.time.start) {
+    selectedDate.value = event.time.start
+    open()
+  }
+}
 </script>
 <template>
   <div class="calendar-container is-light-mode">
-    <Qalendar :events="events" :config="config" :isLoading="isLoading || isLoadingSlots" />
+    <Qalendar
+      :events="events"
+      :config="config"
+      :isLoading="isLoading || isLoadingSlots"
+      @cell-click="handleCellClick"
+    />
   </div>
+  <CreateAppointmentModal :show="isOpen" :date="selectedDate" @close="close" />
 </template>
 <style scoped>
 @import 'qalendar/dist/style.css';
