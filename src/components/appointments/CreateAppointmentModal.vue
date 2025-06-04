@@ -60,7 +60,13 @@ async function onSubmit(values: any): Promise<void> {
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Servicios</label>
-            <Field name="service_ids" :as="ServiceMultiSelect" :options="services" placeholder="Selecciona servicios" />
+            <Field name="service_ids" v-slot="{ field }">
+              <ServiceMultiSelect
+                v-model="field.value"
+                :options="services"
+                placeholder="Selecciona servicios"
+              />
+            </Field>
             <ErrorMessage name="service_ids" class="text-danger text-xs mt-1" />
           </div>
           <div>
