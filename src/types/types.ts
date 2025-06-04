@@ -87,6 +87,13 @@ export interface AppointmentResponse {
   data: Appointment[]
 }
 
+export interface AppointmentCreate {
+  client_id: number
+  date: string
+  notes: string
+  service_ids: number[]
+}
+
 export type QalendarEvent = {
   id: string | number
   title: string
