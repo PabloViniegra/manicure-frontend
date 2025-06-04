@@ -6,6 +6,7 @@ import { useAppointments } from '@/composables/useAppointments'
 import { useAuth } from '@/composables/useAuth'
 import { ref, watch } from 'vue'
 import type { AppointmentCreate } from '@/types/types'
+import ServiceMultiSelect from './ServiceMultiSelect.vue'
 
 const props = defineProps<{
   show: boolean
@@ -59,14 +60,7 @@ async function onSubmit(values: any): Promise<void> {
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Servicios</label>
-            <Field
-              name="service_ids"
-              as="select"
-              multiple
-              class="w-full rounded border px-3 py-2 mt-1 font-sans text-black bg-white"
-            >
-              <option v-for="s in services" :key="s.id" :value="s.id">{{ s.name }}</option>
-            </Field>
+            <Field name="service_ids" :as="ServiceMultiSelect" :options="services" placeholder="Selecciona servicios" />
             <ErrorMessage name="service_ids" class="text-danger text-xs mt-1" />
           </div>
           <div>
