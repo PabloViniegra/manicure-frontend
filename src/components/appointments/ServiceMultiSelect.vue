@@ -81,11 +81,11 @@ function onClickOutside(event: MouseEvent): void {
   }
 }
 
-onMounted(() => {
+onMounted((): void => {
   document.addEventListener('click', onClickOutside)
 })
 
-onBeforeUnmount(() => {
+onBeforeUnmount((): void => {
   document.removeEventListener('click', onClickOutside)
 })
 </script>
