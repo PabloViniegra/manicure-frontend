@@ -33,7 +33,9 @@ async function onSubmit(values: any): Promise<void> {
     client_id: me.value.client_id,
     date: editedDate.value,
     notes: values.notes,
-    service_ids: (values.service_ids ?? []).map((id: string): number => Number(id)),
+    service_ids: Array.isArray(values.service_ids)
+      ? values.service_ids.map(Number)
+      : [Number(values.service_ids)],
   }
   await createAppointment(appointment)
   emit('close')
@@ -49,10 +51,10 @@ async function onSubmit(values: any): Promise<void> {
             <label class="block text-gray-700 font-mont font-medium">Fecha</label>
             <Field
               name="date"
-              as="input"
-              type="text"
-              v-model="editedDate"
               class="w-full rounded border px-3 py-2 mt-1 font-sans text-black bg-white"
+              type="text"
+              as="input"
+              v-model="editedDate"
               :validateOnInput="true"
               placeholder="YYYY-MM-DD HH:mm"
             />
@@ -60,13 +62,13 @@ async function onSubmit(values: any): Promise<void> {
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Servicios</label>
-            <Field name="service_ids" v-slot="{ field }">
-              <ServiceMultiSelect
-                v-model="field.value"
-                :options="services"
-                placeholder="Selecciona servicios"
-              />
-            </Field>
+            <Field
+              name="service_ids"
+              :as="ServiceMultiSelect"
+              :options="services"
+              :placeholder="'Selecciona servicios'"
+              :multiple="true"
+            />
             <ErrorMessage name="service_ids" class="text-danger text-xs mt-1" />
           </div>
           <div>
