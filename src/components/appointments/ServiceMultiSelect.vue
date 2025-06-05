@@ -3,12 +3,14 @@ import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import type { ServiceSimple } from '@/types/types'
 
 interface Props {
-  modelValue: number[]
+  modelValue?: number[]
   options: ServiceSimple[]
   placeholder?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+})
 const emit = defineEmits<{ (e: 'update:modelValue', value: number[]): void }>()
 
 const open = ref(false)
@@ -47,7 +49,6 @@ function onCheck(id: number, event: Event): void {
   } else {
     localValue.value = localValue.value.filter((val): boolean => val !== id)
   }
-  emit('update:modelValue', [...localValue.value])
 }
 
 onMounted((): void => {
