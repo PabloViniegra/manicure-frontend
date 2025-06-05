@@ -1,4 +1,4 @@
-import axios, { type InternalAxiosRequestConfig } from 'axios'
+import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import router from '@/router'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -20,8 +20,8 @@ apiService.interceptors.request.use((config): InternalAxiosRequestConfig => {
 })
 
 apiService.interceptors.response.use(
-  response => response,
-  error => {
+  (response): AxiosResponse<any, any> => response,
+  (error): Promise<never> => {
     if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
       router.push('/login')
     }
