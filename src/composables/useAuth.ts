@@ -3,6 +3,7 @@ import { ref, watch, type Ref } from 'vue'
 import { useMutation, QueryClient, useQuery } from '@tanstack/vue-query'
 import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
+import type { AxiosError } from 'axios'
 import type { UserRegister, UserRegisterResponse, UserLogin, Token, User } from '@/types/types'
 import { useRouter } from 'vue-router'
 
@@ -42,8 +43,12 @@ export const useAuth = (): {
       authStore.setUsername(variables.username)
       router.push('/')
     },
-    onError: (err: Error): void => {
-      error.value = err.message
+    onError: (err: AxiosError | Error): void => {
+      if ((err as AxiosError).isAxiosError && (err as AxiosError).response?.status === 401) {
+        error.value = 'Credenciales incorrectas'
+      } else {
+        error.value = err.message
+      }
     },
   })
 
