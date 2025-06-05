@@ -24,9 +24,13 @@ watch(
   },
 )
 
-watch(localValue, (val): void => {
-  emit('update:modelValue', val)
-})
+watch(
+  localValue,
+  (val): void => {
+    emit('update:modelValue', val)
+  },
+  { deep: true },
+)
 
 const selectedOptions = computed((): ServiceSimple[] =>
   props.options.filter((o): boolean => localValue.value.includes(o.id)),
