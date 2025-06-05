@@ -9,12 +9,14 @@ import { config } from '@/lib/qalendarConfig'
 import { useSlots } from '@/composables/useSlots'
 import { useModal } from '@/composables/useModal'
 import CreateAppointmentModal from '@/components/appointments/CreateAppointmentModal.vue'
+import DeleteAppointmentModal from '../appointments/DeleteAppointmentModal.vue'
 const { appointments, isLoading } = useAppointments()
 const { blockedSlots, isLoadingSlots } = useSlots()
 const events = ref<QalendarEvent[]>([])
 const { isOpen, open, close } = useModal()
+const { isOpen: isDeleteOpen, open: deleteOpen, close: closeDelete } = useModal()
 const selectedDate = ref('')
-
+const selectedAppointmentId = ref<number | null>(null)
 watchEffect((): void => {
   const apptEvents = appointments.value
     ? mapAppointmentsToEvents(appointments.value).map((e): QalendarEvent => ({ ...e }))
@@ -36,6 +38,12 @@ function handleCellClick(event: string): void {
   selectedDate.value = event
   open()
 }
+
+function handleDelete(event: number): void {
+  console.log('Delete appointment with ID:', event)
+  selectedAppointmentId.value = event
+  deleteOpen()
+}
 </script>
 <template>
   <div class="calendar-container is-light-mode">
@@ -44,9 +52,15 @@ function handleCellClick(event: string): void {
       :config="config"
       :isLoading="isLoading || isLoadingSlots"
       @datetime-was-clicked="handleCellClick"
+      @delete-event="handleDelete"
     />
   </div>
   <CreateAppointmentModal :show="isOpen" :date="selectedDate" @close="close" />
+  <DeleteAppointmentModal
+    :show="isDeleteOpen"
+    @close="closeDelete"
+    :appointmentId="selectedAppointmentId ?? 0"
+  />
 </template>
 <style scoped>
 @import 'qalendar/dist/style.css';

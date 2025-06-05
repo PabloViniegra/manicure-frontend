@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { getMyAppointments, createAppointment } from '@/services/appointments'
+import { getMyAppointments, createAppointment, deleteAppointment } from '@/services/appointments'
 import { useAppointmentsStore } from '@/stores/appointments'
 import type { Appointment, AppointmentCreate, AppointmentResponse } from '@/types/types'
 import { watch, type Ref } from 'vue'
@@ -10,6 +10,8 @@ export function useAppointments(params?: { skip?: number; limit?: number; search
   isLoading: Ref<boolean>
   createAppointment: (appointmentIn: AppointmentCreate) => Promise<Appointment>
   isCreating: Ref<boolean>
+  deleteAppointment: (id: number) => Promise<Appointment>
+  isDeleting: Ref<boolean>
 } {
   const queryClient = useQueryClient()
   const skip = params?.skip ?? 0
@@ -34,6 +36,18 @@ export function useAppointments(params?: { skip?: number; limit?: number; search
     },
   })
 
+  const deleteAppointmentMutation = useMutation({
+    mutationFn: (id: number): Promise<Appointment> => deleteAppointment(id),
+    onSuccess: (): void => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
+    },
+    onError: (error): void => {
+      if (error instanceof Error) {
+        console.error('Error deleting appointment:', error.message)
+      }
+    },
+  })
+
   watch(appointmentsQuery.data, (data): void => {
     if (data) {
       appointmentsStore.setAppointments(data.data)
@@ -51,5 +65,7 @@ export function useAppointments(params?: { skip?: number; limit?: number; search
     isLoading: appointmentsQuery.isLoading || appointmentsQuery.isFetching || appointmentsQuery.isPending,
     createAppointment: appointmentsMutation.mutateAsync,
     isCreating: appointmentsMutation.isPending,
+    deleteAppointment: deleteAppointmentMutation.mutateAsync,
+    isDeleting: deleteAppointmentMutation.isPending,
   }
 }

@@ -46,7 +46,7 @@ async function onSubmit(values: any): Promise<void> {
     >P
     <div v-if="show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-white rounded-xl shadow-lg p-6 w-3/6 max-w-none flex flex-col justify-center">
-        <h3 class="text-xl font-bold font-display mb-4 text-primary-dark">Crear cita</h3>
+        <h3 class="text-2xl font-extrabold font-display mb-4 text-primary-dark">Crear cita</h3>
         <Form
           :validation-schema="appointmentCreateSchema"
           @submit="onSubmit"
@@ -89,9 +89,20 @@ async function onSubmit(values: any): Promise<void> {
             <ErrorMessage name="notes" class="text-danger text-xs mt-1" />
           </div>
           <div class="flex justify-end gap-2">
-            <button type="button" @click="emit('close')" class="btn btn-secondary">Cancelar</button>
-            <button type="submit" class="btn btn-primary" :disabled="isCreating || !meta.valid">
+            <button
+              type="button"
+              @click="emit('close')"
+              class="btn btn-text btn-secondary font-mont"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary waves waves-light font-mont"
+              :disabled="isCreating || !meta.valid"
+            >
               {{ isCreating ? 'Creando...' : 'Crear' }}
+              <span v-if="isCreating" class="loading loading-spinner loading-sm space-x-1"></span>
             </button>
           </div>
         </Form>
