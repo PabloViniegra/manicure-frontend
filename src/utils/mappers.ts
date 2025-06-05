@@ -12,7 +12,7 @@ export function mapAppointmentsToEvents(appointments: Appointment[]): QalendarEv
       start: normalizeDateString(appt.date),
       end: calcEndTime(appt.date, appt.services)
     },
-    color: appt.status === 'confirmed' ? 'green' : appt.status === 'pending' ? 'yellow' : 'red',
+    color: appt.status === 'confirmed' || appt.status === 'pending' ? 'green' : 'red',
     isEditable: true
   }))
 }
