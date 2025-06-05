@@ -46,7 +46,13 @@ async function onSubmit(values: any): Promise<void> {
     <div v-if="show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-white rounded-xl shadow-lg p-6 w-3/6 max-w-none flex flex-col justify-center">
         <h3 class="text-xl font-bold font-display mb-4 text-primary-dark">Crear cita</h3>
-        <Form :validation-schema="appointmentCreateSchema" @submit="onSubmit" class="space-y-4">
+        <Form
+          :validation-schema="appointmentCreateSchema"
+          @submit="onSubmit"
+          class="space-y-4"
+          :initial-values="{ service_ids: [] }"
+          v-slot="{ meta }"
+        >
           <div>
             <label class="block text-gray-700 font-mont font-medium">Fecha</label>
             <Field
@@ -69,7 +75,6 @@ async function onSubmit(values: any): Promise<void> {
               :placeholder="'Selecciona servicios'"
               :multiple="true"
             />
-            <ErrorMessage name="service_ids" class="text-danger text-xs mt-1" />
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Notas</label>
@@ -82,7 +87,7 @@ async function onSubmit(values: any): Promise<void> {
           </div>
           <div class="flex justify-end gap-2">
             <button type="button" @click="emit('close')" class="btn btn-secondary">Cancelar</button>
-            <button type="submit" class="btn btn-primary" :disabled="isCreating">
+            <button type="submit" class="btn btn-primary" :disabled="isCreating || !meta.valid">
               {{ isCreating ? 'Creando...' : 'Crear' }}
             </button>
           </div>
