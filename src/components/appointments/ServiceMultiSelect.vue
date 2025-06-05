@@ -1,39 +1,21 @@
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import type { ServiceSimple } from '@/types/types'
 
 interface Props {
-  modelValue?: number[]
+  modelValue: number[]
   options: ServiceSimple[]
   placeholder?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: () => [],
-})
+const props = defineProps<Props>()
 const emit = defineEmits<{ (e: 'update:modelValue', value: number[]): void }>()
 
 const open = ref(false)
-const localValue = ref<number[]>(props.modelValue ?? [])
 const wrapper = ref<HTMLElement | null>(null)
 
-watch(
-  (): number[] => props.modelValue,
-  (val): void => {
-    localValue.value = val ?? []
-  },
-)
-
-watch(
-  localValue,
-  (val): void => {
-    emit('update:modelValue', val)
-  },
-  { deep: true },
-)
-
 const selectedOptions = computed((): ServiceSimple[] =>
-  props.options.filter((o): boolean => localValue.value.includes(o.id)),
+  props.options.filter((o): boolean => props.modelValue.includes(o.id)),
 )
 
 function toggle(): void {
@@ -48,11 +30,13 @@ function onClickOutside(event: MouseEvent): void {
 
 function onCheck(id: number, event: Event): void {
   const checked = (event.target as HTMLInputElement).checked
+  let next = props.modelValue.slice()
   if (checked) {
-    if (!localValue.value.includes(id)) localValue.value.push(id)
+    if (!next.includes(id)) next.push(id)
   } else {
-    localValue.value = localValue.value.filter((val): boolean => val !== id)
+    next = next.filter((val): boolean => val !== id)
   }
+  emit('update:modelValue', next)
 }
 
 onMounted((): void => {
@@ -94,7 +78,7 @@ onBeforeUnmount((): void => {
             type="checkbox"
             class="accent-primary"
             :value="option.id"
-            :checked="localValue.includes(option.id)"
+            :checked="props.modelValue.includes(option.id)"
             @change="onCheck(option.id, $event)"
             @click.stop
           />
@@ -104,14 +88,3 @@ onBeforeUnmount((): void => {
     </transition>
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

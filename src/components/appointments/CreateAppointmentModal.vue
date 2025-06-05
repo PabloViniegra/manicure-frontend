@@ -42,7 +42,8 @@ async function onSubmit(values: any): Promise<void> {
 }
 </script>
 <template>
-  <Teleport to="body">
+  <Teleport to="body"
+    >P
     <div v-if="show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-white rounded-xl shadow-lg p-6 w-3/6 max-w-none flex flex-col justify-center">
         <h3 class="text-xl font-bold font-display mb-4 text-primary-dark">Crear cita</h3>
@@ -68,13 +69,15 @@ async function onSubmit(values: any): Promise<void> {
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Servicios</label>
-            <Field
-              name="service_ids"
-              :as="ServiceMultiSelect"
-              :options="services"
-              :placeholder="'Selecciona servicios'"
-              :multiple="true"
-            />
+            <Field name="service_ids" v-slot="{ field, errors }">
+              <ServiceMultiSelect
+                :model-value="field.value"
+                @update:modelValue="(val) => field.onChange(val)"
+                :options="services"
+                placeholder="Selecciona servicios"
+              />
+              <span class="text-danger text-xs mt-1">{{ errors[0] }}</span>
+            </Field>
           </div>
           <div>
             <label class="block text-gray-700 font-mont font-medium">Notas</label>
