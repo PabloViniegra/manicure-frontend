@@ -4,9 +4,10 @@ import { appointmentCreateSchema } from '@/types/schemas'
 import { useServices } from '@/composables/useServices'
 import { useAppointments } from '@/composables/useAppointments'
 import { useAuth } from '@/composables/useAuth'
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import type { AppointmentCreate } from '@/types/types'
 import ServiceMultiSelect from './ServiceMultiSelect.vue'
+import SuccessCheck from '../shared/SuccessCheck.vue'
 
 const props = defineProps<{
   show: boolean
@@ -20,6 +21,8 @@ const { createAppointment, isCreating } = useAppointments()
 const { me } = useAuth()
 
 const editedDate = ref(props.date)
+
+const showSuccess = ref<boolean>(false)
 watch(
   (): string => props.date,
   (val): void => {
@@ -38,12 +41,15 @@ async function onSubmit(values: any): Promise<void> {
       : [Number(values.service_ids)],
   }
   await createAppointment(appointment)
-  emit('close')
+  showSuccess.value = true
+  setTimeout((): void => {
+    showSuccess.value = false
+    emit('close')
+  }, 1200)
 }
 </script>
 <template>
-  <Teleport to="body"
-    >P
+  <Teleport to="body">
     <div v-if="show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-white rounded-xl shadow-lg p-6 w-3/6 max-w-none flex flex-col justify-center">
         <h3 class="text-2xl font-extrabold font-display mb-4 text-primary-dark">Crear cita</h3>
@@ -106,6 +112,7 @@ async function onSubmit(values: any): Promise<void> {
             </button>
           </div>
         </Form>
+        <SuccessCheck v-if="showSuccess" />
       </div>
     </div>
   </Teleport>

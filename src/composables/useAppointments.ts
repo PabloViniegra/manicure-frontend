@@ -10,7 +10,7 @@ export function useAppointments(params?: { skip?: number; limit?: number; search
   isLoading: Ref<boolean>
   createAppointment: (appointmentIn: AppointmentCreate) => Promise<Appointment>
   isCreating: Ref<boolean>
-  deleteAppointment: (id: number) => Promise<Appointment>
+  deleteAppointment: (id: number) => Promise<void>
   isDeleting: Ref<boolean>
 } {
   const queryClient = useQueryClient()
@@ -37,7 +37,7 @@ export function useAppointments(params?: { skip?: number; limit?: number; search
   })
 
   const deleteAppointmentMutation = useMutation({
-    mutationFn: (id: number): Promise<Appointment> => deleteAppointment(id),
+    mutationFn: (id: number): Promise<void> => deleteAppointment(id),
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ['appointments'] })
     },

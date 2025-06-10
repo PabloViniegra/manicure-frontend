@@ -24,7 +24,6 @@ export const createAppointment = async (appointmentIn: AppointmentCreate): Promi
   return data
 }
 
-export const deleteAppointment = async (id: number): Promise<Appointment> => {
-  const { data } = await apiService.delete(`/appointments/${id}`)
-  return data
+export const deleteAppointment = async (id: number): Promise<void> => {
+  await apiService.delete<Appointment>(`/appointments/${id}`)
 }

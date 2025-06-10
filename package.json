@@ -20,6 +20,8 @@
     "@fontsource-variable/spline-sans-mono": "^5.2.5",
     "@tanstack/vue-query": "^5.79.0",
     "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
+    "gsap": "^3.13.0",
     "pinia": "^3.0.1",
     "qalendar": "^3.9.0",
     "vee-validate": "^4.15.0",

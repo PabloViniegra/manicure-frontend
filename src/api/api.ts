@@ -1,6 +1,9 @@
 import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const router = useRouter()
 
 export const apiService = axios.create({
   baseURL: API_BASE_URL,
@@ -18,12 +21,19 @@ apiService.interceptors.request.use((config): InternalAxiosRequestConfig => {
   return config
 })
 
+
 apiService.interceptors.response.use(
-  (response): AxiosResponse<any, any> => response,
+  (res): AxiosResponse => res,
   (error): Promise<never> => {
-    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
-      window.location.href = '/login'
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      router.currentRoute.value.path !== '/login'
+    ) {
+      const authStore = useAuthStore()
+      authStore.clearAuth()
+      router.push('/login')
     }
     return Promise.reject(error)
-  },
+  }
 )

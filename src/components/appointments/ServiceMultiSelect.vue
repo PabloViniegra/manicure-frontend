@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import type { ServiceSimple } from '@/types/types'
+import gsap from 'gsap'
 
 interface Props {
   modelValue: number[]
@@ -13,6 +14,7 @@ const emit = defineEmits<{ (e: 'update:modelValue', value: number[]): void }>()
 
 const open = ref(false)
 const wrapper = ref<HTMLElement | null>(null)
+const menuRef = ref<HTMLElement | null>(null)
 
 const selectedOptions = computed((): ServiceSimple[] =>
   props.options.filter((o): boolean => props.modelValue.includes(o.id)),
@@ -27,6 +29,21 @@ function onClickOutside(event: MouseEvent): void {
     open.value = false
   }
 }
+
+watch(open, async (show): Promise<void> => {
+  await nextTick()
+  if (!menuRef.value) return
+
+  if (show) {
+    gsap.fromTo(
+      menuRef.value,
+      { opacity: 0, y: -20 },
+      { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' },
+    )
+  } else {
+    gsap.to(menuRef.value, { opacity: 0, y: -20, duration: 0.2, ease: 'power2.in' })
+  }
+})
 
 function onCheck(id: number, event: Event): void {
   const checked = (event.target as HTMLInputElement).checked
@@ -67,6 +84,7 @@ onBeforeUnmount((): void => {
     <transition name="fade">
       <ul
         v-if="open"
+        ref="menuRef"
         class="absolute z-10 w-full bg-white border rounded mt-1 max-h-60 overflow-auto shadow-lg"
       >
         <li

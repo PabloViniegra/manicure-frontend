@@ -1,18 +1,36 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import MainLogo from './icons/MainLogo.vue'
+import gsap from 'gsap'
+import { SplitText } from 'gsap/SplitText'
+
+gsap.registerPlugin(SplitText)
 
 const { username, logout } = useAuth()
 const router = useRouter()
 const menuOpen = ref(false)
+const titleRef = ref<HTMLElement | null>(null)
 
 function handleLogout(): void {
   logout()
   router.push('/login')
   menuOpen.value = false
 }
+
+onMounted((): void => {
+  if (titleRef.value) {
+    const split = SplitText.create(titleRef.value, { type: 'chars, words' })
+    gsap.from(split.chars, {
+      y: 40,
+      opacity: 0,
+      stagger: 0.05,
+      duration: 0.5,
+      ease: 'back.out(2)',
+    })
+  }
+})
 </script>
 
 <template>
