@@ -12,8 +12,12 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 const { deleteAppointment, isDeleting } = useAppointments()
 
 async function onSubmit(): Promise<void> {
-  await deleteAppointment(props.appointmentId)
-  emit('close')
+  try {
+    await deleteAppointment(props.appointmentId)
+    emit('close')
+  } catch (error) {
+    console.error('Error deleting appointment:', error)
+  }
 }
 </script>
 <template>

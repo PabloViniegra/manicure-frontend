@@ -10,6 +10,8 @@ import { useSlots } from '@/composables/useSlots'
 import { useModal } from '@/composables/useModal'
 import CreateAppointmentModal from '@/components/appointments/CreateAppointmentModal.vue'
 import DeleteAppointmentModal from '../appointments/DeleteAppointmentModal.vue'
+import { getBlockedSlotsQalendarEvents } from '@/utils/calendar'
+
 const { appointments, isLoading } = useAppointments()
 const { blockedSlots, isLoadingSlots } = useSlots()
 const events = ref<QalendarEvent[]>([])
@@ -31,7 +33,13 @@ watchEffect((): void => {
           appt.time.start === blocked.time.start && appt.time.end === blocked.time.end,
       ),
   )
-  events.value = [...apptEvents, ...filteredBlockedEvents]
+  const firstDayOfYear = new Date(new Date().getFullYear(), 0, 1)
+  const lastDayOfYear = new Date(new Date().getFullYear(), 11, 31)
+  const notWorkedSlots = getBlockedSlotsQalendarEvents(
+    firstDayOfYear.toISOString(),
+    lastDayOfYear.toISOString(),
+  )
+  events.value = [...apptEvents, ...filteredBlockedEvents, ...notWorkedSlots]
 })
 
 function handleCellClick(event: string): void {
@@ -39,10 +47,14 @@ function handleCellClick(event: string): void {
   open()
 }
 
-function handleDelete(event: number): void {
-  console.log('Delete appointment with ID:', event)
-  selectedAppointmentId.value = event
+function handleDelete(event: number | string): void {
+  selectedAppointmentId.value = Number(event)
   deleteOpen()
+}
+
+function closeDeleteAndReset(): void {
+  closeDelete()
+  selectedAppointmentId.value = null
 }
 </script>
 <template>
@@ -58,7 +70,7 @@ function handleDelete(event: number): void {
   <CreateAppointmentModal :show="isOpen" :date="selectedDate" @close="close" />
   <DeleteAppointmentModal
     :show="isDeleteOpen"
-    @close="closeDelete"
+    @close="closeDeleteAndReset"
     :appointmentId="selectedAppointmentId ?? 0"
   />
 </template>
